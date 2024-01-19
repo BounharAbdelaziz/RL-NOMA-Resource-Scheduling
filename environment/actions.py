@@ -1,5 +1,4 @@
 import numpy as np
-# from matplotlib import pyplot as plt
 
 
 class Action():
@@ -26,7 +25,7 @@ class Action():
                 dictionary[f'action_{i+1}'] = 'idle'
             else : # r <= 1:
                 dictionary[f'user_{i+1}'] = r
-                dictionary[f'action_{i+1}'] = 'local'
+                dictionary[f'action_{i+1}'] = 'communicate'
             
             action_index = action_index // base
         return dictionary
@@ -53,7 +52,7 @@ class Action():
 
         return toDec(n, base)
     
-    def get_random_action(self):
+    def sample(self):
         """Get a random action index `action_index`"""
 
         action_index = np.random.randint(0, self.n_actions)
