@@ -12,20 +12,22 @@ class User():
                         data_arrival_probability=0.5,
                         snr_levels_cardinality=3,
                         energy_arrival_probability=0.5,
+                        maximum_energy_unit_arrival=1
                     ):
         
         # number of packets in the buffer
         self.data_packets = data_packets
-        # data arrival probability
+        # Data arrival probability
         self.data_arrival_probability = data_arrival_probability
-        
-        # Good or bad channel
-        self.snr_level = snr_level
-        # snr level change probability
-        self.snr_levels_cardinality =  snr_levels_cardinality
-
+        # Maximum number of data packets arrived at once
+        self.maximum_number_of_packets = maximum_number_of_packets
         # Maximum delay
         self.maximum_delay = maximum_delay      
+        
+        # Good, mid or bad channel
+        self.snr_level = snr_level
+        # Number of snr levels
+        self.snr_levels_cardinality =  snr_levels_cardinality
 
         # Maximum energy units in the battery
         self.maximum_battery_level = maximum_battery_level
@@ -33,13 +35,15 @@ class User():
         self.battery_level = battery_level
         # Energy arrival probability
         self.energy_arrival_probability = energy_arrival_probability
+        # Maximum number of energy units arrived at once
+        self.maximum_energy_unit_arrival = maximum_energy_unit_arrival
 
-        # number of possible actions
-        self.n_actions = maximum_number_of_packets
         # number of possible states
         self.n_states = (self.maximum_delay + 1) * self.snr_levels_cardinality * (self.maximum_battery_level + 1)
     
     def get_user_state_index(self):
+        
+        max_user_values = (self.maximum_delay + 1, self.snr_levels_cardinality, self.maximum_battery_level + 1)
 
         # data packet state index
         data_packets_index = self.data_packets
@@ -48,23 +52,33 @@ class User():
         # battery level state index
         battery_level_index = self.battery_level
 
+        user_state = [data_packets_index, snr_level_index, battery_level_index]
+
         # user state index
-        user_state_index = np.ravel_multi_index((data_packets_index, snr_level_index, battery_level_index), 
-                                                (self.maximum_delay + 1, self.snr_levels_cardinality, self.maximum_battery_level + 1))
+        user_state_index = np.ravel_multi_index(user_state, max_user_values)
 
         return user_state_index
     
+    def get_user_state_from_index(self, user_state_index):
+
+        max_user_values = (self.maximum_delay + 1, self.snr_levels_cardinality, self.maximum_battery_level + 1)
+        
+        [data_packets_index, snr_level_index, battery_level_index] = np.unravel_index(user_state_index, max_user_values)
+        user_state = (data_packets_index, snr_level_index, battery_level_index)
+        
+        return user_state
+
     def set_new_user_state(self):
         """Initialize the user state by updating the number of packets in the buffer, the battery level and the channel SNR randomly"""
 
         # update the channel SNR
-        self.snr_level = np.random.uniform(self.snr_levels_cardinality)
+        self.snr_level = np.random.randint(self.snr_levels_cardinality)
 
         # update the number of packets in the buffer
-        self.data_packets = self.np.random.bernoulli(self.data_arrival_probability)
+        self.data_packets = np.random.binomial(self.maximum_number_of_packets, self.data_arrival_probability)
 
         # update the battery level
-        self.battery_level = self.np.random.bernoulli(self.energy_arrival_probability)
+        self.battery_level = np.random.binomial(self.maximum_energy_unit_arrival, self.energy_arrival_probability)
 
     def update_user_state(self):
         """Update the user state by updating the number of packets in the buffer, the battery level and the channel SNR"""
@@ -76,13 +90,13 @@ class User():
             exceeded_delay = True
 
         # update the channel SNR
-        self.snr_level = np.random.uniform(self.snr_levels_cardinality)
+        self.snr_level = np.random.randint(self.snr_levels_cardinality)
 
         # update the number of packets in the buffer
-        self.data_packets = self.data_packets + np.random.bernoulli(self.data_arrival_probability)
+        self.data_packets = self.data_packets + np.random.binomial(self.maximum_number_of_packets, self.data_arrival_probability)
 
         # update the battery level
-        self.battery_level = self.battery_level + np.random.bernoulli(self.energy_arrival_probability)
+        self.battery_level = self.battery_level + np.random.binomial(self.maximum_energy_unit_arrival, self.energy_arrival_probability)
 
         return exceeded_delay
     
