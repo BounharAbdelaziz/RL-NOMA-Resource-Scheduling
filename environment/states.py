@@ -1,4 +1,3 @@
-import inspect
 import numpy as np
 from .user import User
 
@@ -38,7 +37,7 @@ class State():
     def nbr_possible_states(self):
         """Get the number of possible states in the system"""
         n_states = 1
-        for k, user_k in enumerate(self.list_users):
+        for user_k in self.list_users:
             n_states *= user_k.n_states
             
         return n_states
@@ -46,15 +45,17 @@ class State():
     def initialize(self):
         """Initialize each user with a cleared buffer and packet arrival, as well as a channel gain"""
 
-        for k in range(self.n_users):
-            self.list_users[k].set_new_user_state()
+        for user_k in self.list_users:
+            user_k.set_new_user_state()
     
-    def update_state(self,):
+    def update_state(self):
         """Update the state of the system given an action and return the cost = number of packets delayed and discared"""
-
+        exceeded_delays = []
         # Get the current state
-        for k in range(self.n_users):
-            self.list_users[k].update_user_state()
+        for user_k in self.list_users:
+            exceeded_delay = user_k.update_user_state()
+            exceeded_delays.append(exceeded_delay)
+        return exceeded_delays
 
     def get_state(self):
         """Get the current state of the system"""
@@ -77,3 +78,22 @@ class State():
         state_index = np.ravel_multi_index(user_state_indices, max_values)
 
         return state_index
+    
+    def get_state_from_index(self, state_index):
+        """Set the current state using a state index"""
+        users_state = []
+        max_values = tuple()
+        for user_k in self.list_users:
+            max_values = max_values + (user_k.n_states)
+
+        user_state_indices = np.unravel_index(state_index, max_values)
+
+        for user_k, user_state_index in zip(self.list_users, user_state_indices):
+            users_state.append(user_k.get_user_state_from_index(user_state_index))
+
+        return users_state
+    
+    def execute_action(self, list_actions):
+        for action_k, user_k in zip(self.list_users, list_actions):
+            if action_k > 0:
+                user_k.execute()
