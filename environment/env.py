@@ -20,13 +20,20 @@ class Environnement():
         transition = []
         
         reward = self.reward_model.reward_matrix[state_index, action_index]
-        next_state_probs = self.reward_model.reward_matrix[state_index, action_index]
+        
+        # check this part
+        next_state_probs = self.transition_model.transition_matrix[state_index, action_index, :]
+        print(f'next_state_probs: {next_state_probs}')
+        print(f'sum: {sum(self.transition_model.transition_matrix[state_index, :, :])}')
+        
         # fill the transition list with the tuples (P[s'], s', r)
         for next_state_index, next_state_prob in enumerate(next_state_probs):
+            # this would cause an empty transition list?
             # optional verification
             if next_state_prob == 0:
                 continue
             transition.append((next_state_prob, next_state_index, reward))
+        print(f'transition: {transition}')
         
         return transition
     
