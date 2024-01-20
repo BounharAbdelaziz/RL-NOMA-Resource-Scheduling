@@ -18,7 +18,7 @@ class State():
         
         # number of users
         self.n_users = n_users
-
+        
         # Users initialization
         self.list_users = []
         for _ in range(n_users):
@@ -33,6 +33,9 @@ class State():
                             energy_arrival_probability=energy_arrival_probability,
                             )  
             self.list_users.append(user_k)
+            
+        # state space cardinality
+        self.n_states = self.nbr_possible_states()
     
     def nbr_possible_states(self):
         """Get the number of possible states in the system"""
@@ -73,7 +76,7 @@ class State():
         max_values = tuple()
         for user_k in self.list_users:
             user_state_indices.append(user_k.get_user_state_index())
-            max_values = max_values + (user_k.n_states)
+            max_values = max_values + (user_k.n_states,)
 
         state_index = np.ravel_multi_index(user_state_indices, max_values)
 
@@ -84,7 +87,7 @@ class State():
         users_state = []
         max_values = tuple()
         for user_k in self.list_users:
-            max_values = max_values + (user_k.n_states)
+            max_values = max_values + (user_k.n_states,)
 
         user_state_indices = np.unravel_index(state_index, max_values)
 
