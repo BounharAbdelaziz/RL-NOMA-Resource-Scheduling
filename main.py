@@ -26,9 +26,9 @@ if __name__ == '__main__':
     snr_level = 1
     snr_levels_cardinality = 3
     
-    maximum_delay = 0
+    maximum_delay = 1
     
-    maximum_battery_level = 1
+    maximum_battery_level = 2
     battery_level = 0
     
     data_arrival_probability = 0.5
