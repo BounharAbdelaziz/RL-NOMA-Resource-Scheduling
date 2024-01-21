@@ -66,13 +66,18 @@ class ValueIterationAgent():
                 # next_state_prob, next_state_index, reward = transitions[action_index]
                 
                 # it's a bit strange as env.p returns a list of tuples (next_state_prob, next_state_index, reward)
-                next_state_prob, next_state_index, reward = self.env.p(state_index, action_index)
+                # next_state_prob, next_state_index, reward = self.env.p(state_index, action_index)
+                # A[action_index] += next_state_prob * (reward + self.gamma * V[next_state_index])
                 
-                A[action_index] += next_state_prob * (reward + self.gamma * V[next_state_index])
+                # Since env.p returns a list of tuples, the return will not have 3 parameters, Here's a fix if you want to adopt it
+                transitions = self.env.p(state_index, action_index)
+                for (next_state_prob, next_state_index, reward) in transitions:
+                    A[action_index] += next_state_prob * (reward + self.gamma * V[next_state_index])
+                
             return A
 
         #Initialization value function
-        V = np.zeros(n_states)
+        V = np.ones(n_states)
         policy = np.zeros([n_states, n_actions])
 
         #While not optimal value function/optimal policy
@@ -82,7 +87,7 @@ class ValueIterationAgent():
             
             # Update each state
             for state_index in range(n_states):
-                
+                print(f'State: {self.env.state_space.get_state_from_index(state_index)}')
                 # Do a one-step lookahead to find the best action 
                 A = one_step_lookahead(state_index, V)
                 print(f'A: {A}')
@@ -96,7 +101,7 @@ class ValueIterationAgent():
                 print('----------------------------------------------------------')
                 # Update the value function: Bellman optimality eqn 
                 V[state_index] = best_action_value
-            print(V)
+            print(f'V: {V}')
             # Check for convergence 
             if delta < self.convergence_threshold:
                 break
