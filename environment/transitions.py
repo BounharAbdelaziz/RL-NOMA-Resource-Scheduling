@@ -13,6 +13,8 @@ class Transition():
         self.maximum_number_of_packets = self.states.list_users[0].maximum_number_of_packets
         self.snr_levels_cardinality = self.states.list_users[0].snr_levels_cardinality
         self.maximum_battery_level = self.states.list_users[0].maximum_battery_level
+        self.maximum_energy_unit_arrival = self.states.list_users[0].maximum_energy_unit_arrival
+        self.maximum_number_of_packets = self.states.list_users[0].maximum_number_of_packets
         
         self.transition_matrix = self.__compute_transitions()
         
@@ -66,9 +68,16 @@ class Transition():
                         
                         # Verify if the action can be performed, exclude transition if :
                         for l, (user_current_state, user_next_state) in enumerate(zip(current_state, next_state)):
-                        # for l, (user_current_state, user_next_state) in enumerate(current_state, next_state):
                             
                             # print(f"Index: {l}, Current State: {user_current_state}, Next State: {user_next_state}")
+                            
+                            # The next state buffer has more than `maximum_number_of_packets` energy units than the current user buffer
+                            if (user_next_state[0] - user_current_state[0]) > self.maximum_number_of_packets:
+                                transition_matrix[s, a, p] = 0
+
+                            # The next state battery has more than `maximum_energy_unit_arrival` energy units than the current user battery
+                            if (user_next_state[2] - user_current_state[2]) > self.maximum_energy_unit_arrival:
+                                transition_matrix[s, a, p] = 0
                             
                             if action_dictionary[f'action_{l+1}'] == 'idle':
                                 # The user battery level in the next state is less then the user battery level in the current state
@@ -96,6 +105,5 @@ class Transition():
                     transition_matrix[s, a, :] = transition_matrix[s, a, :] / sum(transition_matrix[s, a, :])
             # for the transitions from s to s', divide by the number of available actions, to get to a sum of 1 (could be optional depending on the setup)
             if actions_count > 1:
-                print(actions_count)
                 transition_matrix[s, :, :] = transition_matrix[s, :, :] / actions_count
         return transition_matrix
