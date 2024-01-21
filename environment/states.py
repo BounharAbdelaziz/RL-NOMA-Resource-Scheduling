@@ -1,5 +1,6 @@
 import numpy as np
 from .user import User
+# from user import User
 
 class State():
     """NOMA State Model (Buffer1, Buffer2, Channel1, Channel2, Battery1, Battery2)"""
@@ -7,8 +8,8 @@ class State():
     def __init__(self,  data_packets=0, 
                         maximum_number_of_packets=1,
                         snr_level=1, 
-                        maximum_delay=0, 
-                        maximum_battery_level=1, 
+                        maximum_delay=1, 
+                        maximum_battery_level=2, 
                         battery_level=0,
                         data_arrival_probability=0.5,
                         snr_levels_cardinality=3,
