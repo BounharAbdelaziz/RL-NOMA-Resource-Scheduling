@@ -7,7 +7,7 @@ class User():
                         maximum_number_of_packets=1,
                         snr_level=1, 
                         maximum_delay=1, 
-                        maximum_battery_level=1, 
+                        maximum_battery_level=2, 
                         battery_level=0,
                         data_arrival_probability=0.5,
                         snr_levels_cardinality=3,
@@ -93,10 +93,10 @@ class User():
         self.snr_level = np.random.randint(self.snr_levels_cardinality)
 
         # update the number of packets in the buffer
-        self.data_packets = self.data_packets + np.random.binomial(self.maximum_number_of_packets, self.data_arrival_probability)
+        self.data_packets = max(self.data_packets + np.random.binomial(self.maximum_number_of_packets, self.data_arrival_probability), self.maximum_number_of_packets)
 
         # update the battery level
-        self.battery_level = self.battery_level + np.random.binomial(self.maximum_energy_unit_arrival, self.energy_arrival_probability)
+        self.battery_level = max(self.battery_level + np.random.binomial(self.maximum_energy_unit_arrival, self.energy_arrival_probability), self.maximum_battery_level)
 
         return exceeded_delay
     
