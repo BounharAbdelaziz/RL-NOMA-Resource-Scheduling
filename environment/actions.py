@@ -45,10 +45,7 @@ class Action():
         n = 0
        
         for i in range(len(dictionary)//2):
-            if dictionary[f'action_{i+1}'] == 'idle':
-                n += dictionary[f'user_{i+1}'] * 10**i
-            elif dictionary[f'action_{i+1}'] == 'communicate':
-                n += (dictionary[f'user_{i+1}'] + 1) * 10**i
+            n += dictionary[f'user_{i+1}'] * 10**i
 
         return toDec(n, base)
     
