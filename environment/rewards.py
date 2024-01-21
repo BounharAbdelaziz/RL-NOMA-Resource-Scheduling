@@ -11,9 +11,11 @@ class Reward():
         self.reward_matrix_dims = (self.states.n_states, self.actions.n_actions)
         
         self.reward_matrix = self.__compute_rewards()
-        print(f'Reward Matrix: {self.reward_matrix}')
-    def __compute_rewards(self):
         
+        # print(f'Reward Matrix: {self.reward_matrix}')
+    
+    def __compute_rewards(self):
+    
         reward_matrix = np.zeros(self.reward_matrix_dims)
         
         for s in range(self.reward_matrix_dims[0]):
@@ -22,22 +24,27 @@ class Reward():
             for a in range(self.reward_matrix_dims[1]):
                 action_dictionary = self.actions.get_action_dictionary(a)
                 noma_users_snr = []
+                
                 # Give a reward of (-oo) to actions that are impossible to execute
                 for l, user_current_state in enumerate(current_state):
                     # the action number of packets to execute for the user are not available in the user buffer
                     if action_dictionary[f'user_{l+1}'] > user_current_state[0]:
                         reward_matrix[s, a] = - math.inf
+                        break
                     
                     if action_dictionary[f'action_{l+1}'] == 'communicate':
                         # log the communicating users to verify multiple communications
-                        noma_users_snr.append(user_current_state[1])
+                        if user_current_state[1] > 1:
+                            noma_users_snr.append(user_current_state[1])
                         # the user action dictates that the user communicates, but its SNR does not allow it 
                         if user_current_state[1] == 0:
                             reward_matrix[s, a] = - math.inf
+                            break
                     
                     # the user battery is not sufficient to execute the action number of packets
                     if action_dictionary[f'user_{l+1}'] > user_current_state[2]:
                         reward_matrix[s, a] = - math.inf
+                        break
                 
                 # the joint action dictates multiple communications
                 if len(noma_users_snr) > 1:
@@ -45,6 +52,7 @@ class Reward():
                         # one of the user SNRs does not permit it
                         if user_snr < len(noma_users_snr):
                             reward_matrix[s, a] = - math.inf
+                            break
 
                 if not math.isinf(reward_matrix[s, a]):
                     for l, user_current_state in enumerate(current_state):
@@ -53,5 +61,5 @@ class Reward():
                         if user_current_state[0] > action_dictionary[f'user_{l+1}']:
                             reward_matrix[s, a] += - (user_current_state[0] - action_dictionary[f'user_{l+1}'])
                             
-            return reward_matrix
-                
+        return reward_matrix
+             
