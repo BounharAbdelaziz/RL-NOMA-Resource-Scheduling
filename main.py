@@ -2,6 +2,7 @@ import sys
 import numpy as np
 from learning.policy_iteration import PolicyIterationAgent
 from learning.value_iteration import ValueIterationAgent
+from learning.qlearning import QLearningAgent
 from environment.states import State
 from environment.actions import Action
 from environment.transitions import Transition
@@ -35,7 +36,7 @@ if __name__ == '__main__':
         energy_arrival_probability = 0.25
         n_users = 2
 
-        agent_to_use = str(input("Which agent do you want to use ? (V: value_iteration / P: policy_iteration) : "))
+        agent_to_use = str(input("Which agent do you want to use ? (V: value_iteration / P: policy_iteration/ Q: q_learning): "))
 
         #----------------------------------------------------- Environment -----------------------------------------------------#
 
@@ -70,6 +71,11 @@ if __name__ == '__main__':
                 agent = ValueIterationAgent(environment=environment, 
                                                 gamma=gamma, 
                                                 convergence_threshold=convergence_threshold)
-
+        elif agent_to_use.upper() == 'Q':
+                agent = QLearningAgent(environment=environment, 
+                                                gamma=gamma, 
+                                                learning_rate=1e-3)     
+        else:
+                raise NotImplementedError(f"Agent {agent_to_use} is not implemented yet ! Please choose between P (Policy Iteration) and V (Value Iteration)")
         # Start training
         agent.train()
