@@ -1,6 +1,6 @@
 import numpy as np
 from environment.env import Environnement
-
+from matplotlib import pyplot as plt
 class ValueIterationAgent():
     
     def __init__(self, environment: Environnement, gamma: float = 0.99, convergence_threshold: float = 1e-5):
@@ -23,16 +23,16 @@ class ValueIterationAgent():
         Train the Value Iteration Agent.
         """
         print("Value Iteration Training : Process Initiated ... ")
-        V, policy = self.value_iteration()
+        V, policy, delta_array = self.value_iteration()
         print("Value Iteration Training : Process Completed !")
         print(f'Value function: {V}')
         print(f'Policy: {policy}')
         
-        
-        # print("Value Iteration Training : Saving the Policy and Value Function ... ")
-        # np.savez('policy.npz', policy)
-        # np.savez('vFunc.npz', V)
-        # print("Value Iteration Training : Policy and Value Function Saved !")
+        plt.plot(delta_array)
+        plt.title("Convergence of Value Iteration Algorithm")
+        plt.xlabel("Iteration")
+        plt.ylabel("Delta")
+        plt.savefig("convergence_value_iteration.png")
         
         return V, policy
     
@@ -43,6 +43,9 @@ class ValueIterationAgent():
         Returns:
             A tuple (V, policy) of the optimal value function and the optimal policy.
         """
+        
+        # array to save the delta between each iteration
+        delta_array = []
         
         # state and action space sizes
         n_states = self.env.state_space.n_states
@@ -62,14 +65,7 @@ class ValueIterationAgent():
             A = np.zeros(n_actions)
             # transitions = self.env.p(state_index, action_index)
             for action_index in range(n_actions):
-                # transitions = self.env.p(state_index, action_index)
-                # next_state_prob, next_state_index, reward = transitions[action_index]
-                
-                # it's a bit strange as env.p returns a list of tuples (next_state_prob, next_state_index, reward)
-                # next_state_prob, next_state_index, reward = self.env.p(state_index, action_index)
-                # A[action_index] += next_state_prob * (reward + self.gamma * V[next_state_index])
-                
-                # Since env.p returns a list of tuples, the return will not have 3 parameters, Here's a fix if you want to adopt it
+                # Since env.p returns a list of tuples (transition probability, next state, reward)
                 transitions = self.env.p(state_index, action_index)
                 for (next_state_prob, next_state_index, reward) in transitions:
                     A[action_index] += next_state_prob * (reward + self.gamma * V[next_state_index])
@@ -87,21 +83,16 @@ class ValueIterationAgent():
             
             # Update each state
             for state_index in range(n_states):
-                print(f'State: {self.env.state_space.get_state_from_index(state_index)}')
                 # Do a one-step lookahead to find the best action 
                 A = one_step_lookahead(state_index, V)
-                print(f'A: {A}')
                 # choose the action that maximizes the state-value function
                 best_action_value = np.max(A)
-                
                 # Calculate delta across all states 
                 delta = max(delta, np.abs(best_action_value - V[state_index]))
-                print(f'delta: {delta}')
-                
-                print('----------------------------------------------------------')
+                delta_array.append(delta)
                 # Update the value function: Bellman optimality eqn 
                 V[state_index] = best_action_value
-            print(f'V: {V}')
+                
             # Check for convergence 
             if delta < self.convergence_threshold:
                 break
@@ -113,4 +104,4 @@ class ValueIterationAgent():
             best_action = np.argmax(A)
             # Always take the best action
             policy[state_index, best_action] = 1.0
-        return V, policy
+        return V, policy, delta_array
