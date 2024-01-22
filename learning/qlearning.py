@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 class QLearningAgent():
     """Class for Q-Learning & Double Q-Learning Algorithm"""
 
-    def __init__(self, environment: Environnement, gamma:float = 0.99, learning_rate: float = 1e-3, initial_q_value: float = -1):
+    def __init__(self, environment: Environnement, gamma:float = 0.99, learning_rate: float = 1e-2, initial_q_value: float = -1):
         """
         Class for Q-Learning Algorithm
 
@@ -38,7 +38,7 @@ class QLearningAgent():
         # The old Q value
         old_Q_value = self.Q_matrix[current_state, action]
         # The new Q value (learned value)
-        learned_value = reward + self.discount_factor * np.max(self.Q_matrix[next_state, :])
+        learned_value = reward + self.gamma * np.max(self.Q_matrix[next_state, :])
         # Update the Q-matrix of the current state and action pair
         self.Q_matrix[current_state, action] = (1- self.learning_rate) * old_Q_value + self.learning_rate * learned_value
 
@@ -51,7 +51,7 @@ class QLearningAgent():
         else:
             return np.argmax(self.Q_matrix[state_index])
     
-    def train(self, n_episodes: int = 100, n_time_steps: int = 100, epsilon_decay: float = 0.95, epsilon_min: float = 0.01):
+    def train(self, n_episodes: int = 10000, n_time_steps: int = 150000, epsilon_decay: float = 0.99, epsilon_min: float = 0.01):
         """
         Train the Q-Learning agent.
         
@@ -64,38 +64,19 @@ class QLearningAgent():
             - epsilon_min : Minimum Exploration Rate
             - double : Boolean for Double Q-Learning (default = False)
         """
-        
-        # Exploration Rate Decay Curve
-        epsilons = np.ones(int(n_episodes))
-
-        for i in range(n_episodes):
-            if i >= 1e3 and (i+1) % 1e2 == 0:
-                epsilons[i] = max(epsilons[i-1] * epsilon_decay, epsilon_min)
-            elif i > 0:
-                epsilons[i] = epsilons[i-1]
-
-        # Learning Rate Decay Curve
-        alphas = np.ones(int(n_episodes)) * 1e-3
-
-        for i in range(n_episodes):
-            if 0 < i <= 100:
-                alphas[i] = alphas[i-1] * 10**0.01
-            elif alphas[i-1] > 1e-3:
-                alphas[i] = max(alphas[i-1] * 0.999, 1e-3)
-            elif i > 0:
-                break
 
         print("[INFO] Q-Learning Training: Process Initiated ... ")
+        print(f'The state space is of size {self.n_states * self.n_actions}.')
+        
+        epsilon = 1
 
         for episode in tqdm(range(n_episodes)):
             
             # Generate a Random Intial State
             _ = self.environment.reset()
 
-            # Exploration Probabilities
-            epsilon = np.random.random()
             percentage_unvisited_states = self.computes_percentage_unvisited_states()
-            print(f'Percentage of unvisited states : {percentage_unvisited_states:.2f}%')
+            # epsilon = min(1, percentage_unvisited_states +0.2)
             if percentage_unvisited_states == 0:
                 print(f'INFO] Q-Learning exploration : All states have been visited ! Setting epsilon to epsilon_min = {epsilon_min} ...')
                 epsilon = epsilon_min
@@ -116,10 +97,10 @@ class QLearningAgent():
                 # Update Q(s, a)
                 self.update_Q_matrix(reward, current_state, next_state, best_action)
 
-            avg_reward = np.mean(reward_episode[-100:])
+            avg_reward = np.mean(reward_episode)
             epsilon = max(epsilon * epsilon_decay, epsilon_min)
             
-            print(f'Episode: {episode+1}/{n_episodes}, Average Reward: {avg_reward}, Epsilon: {epsilon:.2f}, Learning Rate: {alphas[episode]:.2e}')
+            print(f'Episode: {episode+1}/{n_episodes}, Average Reward: {avg_reward}, Epsilon: {epsilon:.2f}, Percentage of unvisited states: {percentage_unvisited_states:.2f}')
             print('---------------------------------------------------')
 
         print("[INFO] Q-Learning Training : Process Completed !")
