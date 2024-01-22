@@ -22,6 +22,8 @@ class QLearningAgent():
         
         self.Q_matrix = initial_q_value * np.ones((self.n_states, self.n_actions))
         self.initial_value_Q_matrix = initial_q_value
+
+        self.policy = np.zeros((self.n_states, self.n_actions))
         
         
     def update_Q_matrix(self, reward: float, current_state: int, next_state: int, action: int) -> None:
@@ -68,6 +70,8 @@ class QLearningAgent():
         print("[INFO] Q-Learning Training: Process Initiated ... ")
         print(f'The state space is of size {self.n_states * self.n_actions}.')
         
+        avg_rewards = []
+        
         epsilon = 1
 
         for episode in tqdm(range(n_episodes)):
@@ -98,18 +102,26 @@ class QLearningAgent():
                 self.update_Q_matrix(reward, current_state, next_state, best_action)
 
             avg_reward = np.mean(reward_episode)
+            avg_rewards.append(avg_reward)
+            
             epsilon = max(epsilon * epsilon_decay, epsilon_min)
             
             print(f'Episode: {episode+1}/{n_episodes}, Average Reward: {avg_reward}, Epsilon: {epsilon:.2f}, Percentage of unvisited states: {percentage_unvisited_states:.2f}')
             print('---------------------------------------------------')
 
         print("[INFO] Q-Learning Training : Process Completed !")
+        
+        # Extract policy
+        for s in range(self.n_states):
+            best_action_index = np.argmax(self.Q_matrix[s])
+            self.policy[s, best_action_index] = 1
+        print(f"Policy : {self.policy}")
 
-        plt.plot(avg_reward)
+        plt.plot(avg_rewards)
         plt.title("Convergence of Value Iteration Algorithm")
         plt.xlabel("Iteration")
         plt.ylabel("Average Reward")
-        plt.savefig("convergence_q_learning.png")
+        plt.savefig("./figures/convergence_q_learning.png")
     
     def computes_percentage_unvisited_states(self) -> float:
         """Computes the percentage of unvisited states in the Q-matrix.
