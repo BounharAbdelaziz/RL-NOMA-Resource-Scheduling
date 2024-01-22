@@ -7,7 +7,7 @@ class State():
 
     def __init__(self,  data_packets=0, 
                         maximum_number_of_packets=1,
-                        snr_level=1, 
+                        snr_level=0, 
                         maximum_delay=1, 
                         maximum_battery_level=2, 
                         battery_level=0,
@@ -15,7 +15,7 @@ class State():
                         snr_levels_cardinality=3,
                         energy_arrival_probability=0.5,
                         n_users=2,
-                        unavailable_action_penalty=10,
+                        unavailable_action_penalty=2,
                 ):
         
         # number of users
@@ -59,10 +59,10 @@ class State():
         state_rewards = []
         for user_k in self.list_users:
             user_reward = - user_k.update_user_state()
-            if is_action_possible:
+            if not is_action_possible:
                 # Add a penalty term in the reward for unavailable action
                 user_reward = user_reward - self.unavailable_action_penalty
-            state_rewards.append(user_reward)
+            state_rewards.append(user_reward * 2)
         
         return state_rewards
 
