@@ -135,6 +135,6 @@ class PolicyIterationAgent():
         plt.title("Convergence of Policy Iteration Algorithm")
         plt.xlabel("Iteration")
         plt.ylabel("Delta")
-        plt.savefig("convergence_policy_iteration.png")
+        plt.savefig("./figures/convergence_policy_iteration.png")
         
         return V, policy

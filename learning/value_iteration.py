@@ -32,7 +32,7 @@ class ValueIterationAgent():
         plt.title("Convergence of Value Iteration Algorithm")
         plt.xlabel("Iteration")
         plt.ylabel("Delta")
-        plt.savefig("convergence_value_iteration.png")
+        plt.savefig("./figures/convergence_value_iteration.png")
         
         return V, policy
     
