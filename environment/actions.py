@@ -13,6 +13,8 @@ class Action():
 
     def get_action_dictionary(self, action_index):
         """Get a dictionary `{u1, action1, u2, action2, ...}` for a given action index `action_index`"""
+        if action_index >= self.n_actions:
+            raise Exception(f"action index `{action_index}` out of range !")
         
         base = 1 + 1
         dictionary = {}
