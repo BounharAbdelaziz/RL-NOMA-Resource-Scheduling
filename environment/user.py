@@ -82,7 +82,6 @@ class User():
 
     def update_user_state(self):
         """Update the user state by updating the number of packets in the buffer, the battery level and the channel SNR"""
-
         # so that we can use it to compute the cost/reward
         exceeded_delay = False
         
@@ -93,12 +92,12 @@ class User():
         self.snr_level = np.random.randint(self.snr_levels_cardinality)
 
         # update the number of packets in the buffer
-        self.data_packets = max(self.data_packets + np.random.binomial(self.maximum_number_of_packets, self.data_arrival_probability), 
-                                self.maximum_number_of_packets)
+        self.data_packets = self.data_packets + np.random.binomial(self.maximum_number_of_packets, self.data_arrival_probability)
+        self.data_packets = min(self.data_packets, self.maximum_number_of_packets)
 
         # update the battery level
-        self.battery_level = max(self.battery_level + np.random.binomial(self.maximum_energy_unit_arrival, self.energy_arrival_probability), 
-                                 self.maximum_battery_level)
+        self.battery_level = self.battery_level + np.random.binomial(self.maximum_energy_unit_arrival, self.energy_arrival_probability)
+        self.battery_level = min(self.battery_level, self.maximum_battery_level)
 
         return exceeded_delay
     
@@ -107,13 +106,13 @@ class User():
         # as we can have at most one packet in the buffer, we execute it and consume energy
         if self.data_packets > 0:
             # execute packet
-            self.buffer_data = self.buffer_data - 1
+            self.data_packets = self.data_packets - 1
             # consume energy
-            self.battery_level = self.battery_level - 1
+            self.battery_level = max(0, self.battery_level - 1)
 
     def __str__(self):
         """Print buffer information"""
-        return f'Buffer state : {self.buffer_data}, maximum battery level: {self.maximum_battery_level}, Number of Packets in the buffer : {self.buffer_data}, Maximum Delay : {self.maximum_delay}'
+        return f'Buffer state : {self.data_packets}, maximum battery level: {self.maximum_battery_level}, Number of Packets in the buffer : {self.data_packets}, Maximum Delay : {self.maximum_delay}, Current Battery level : {self.battery_level}, Maximum Battery level : {self.maximum_battery_level}, snr_level : {self.snr_level}'
 
     def get_user_state(self):
-        return f'Buffer state : {self.buffer_data}, SNR : {self.snr_level}, Current Battery level : {self.battery_level}'
+        return f'Buffer state : {self.data_packets}, SNR : {self.snr_level}, Current Battery level : {self.battery_level}'
