@@ -15,6 +15,7 @@ class State():
                         snr_levels_cardinality=3,
                         energy_arrival_probability=0.5,
                         n_users=2,
+                        unavailable_action_penalty=10,
                 ):
         
         # number of users
@@ -37,6 +38,7 @@ class State():
             
         # state space cardinality
         self.n_states = self.nbr_possible_states()
+        self.unavailable_action_penalty = unavailable_action_penalty
     
     def nbr_possible_states(self):
         """Get the number of possible states in the system"""
@@ -52,14 +54,17 @@ class State():
         for user_k in self.list_users:
             user_k.set_new_user_state()
     
-    def update_state(self):
+    def update_state(self, is_action_possible):
         """Update the state of the system given an action and return the cost = number of packets delayed and discared"""
-        exceeded_delays = []
-        # Get the current state
+        state_rewards = []
         for user_k in self.list_users:
-            exceeded_delay = user_k.update_user_state()
-            exceeded_delays.append(exceeded_delay)
-        return exceeded_delays
+            user_reward = - user_k.update_user_state()
+            if is_action_possible:
+                # Add a penalty term in the reward for unavailable action
+                user_reward = user_reward - self.unavailable_action_penalty
+            state_rewards.append(user_reward)
+        
+        return state_rewards
 
     def get_state(self):
         """Get the current state of the system"""
@@ -97,9 +102,10 @@ class State():
 
         return users_state
     
-    def execute_action(self, list_actions):
-        for user_k, action_k in zip(self.list_users, list_actions):
-            if action_k == 'idle':
-                continue
-            else: # int(action_k) > 0:
-                user_k.execute()
+    def execute_action(self, list_actions, is_action_possible=True):
+        if is_action_possible:
+            for user_k, action_k in zip(self.list_users, list_actions):
+                if action_k == 'idle':
+                    continue
+                else:
+                    user_k.execute()

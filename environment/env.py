@@ -39,12 +39,53 @@ class Environnement():
         
         action_dictionary = self.action_space.get_action_dictionary(action_index)
         list_actions = list(action_dictionary.values())
-        # Execute the action list for the state users
-        self.state_space.execute_action(list_actions)
-        # Update the state information and transition to a new one
-        exceeded_delays = self.state_space.update_state()
 
-        reward = - sum(exceeded_delays)
+        is_action_possible = self.is_action_possible(action_index)
+
+        # Execute the action list for the state users
+        self.state_space.execute_action(list_actions, is_action_possible)
+        # Update the state information and transition to a new one
+        state_rewards = self.state_space.update_state(is_action_possible)
+
+        reward = sum(state_rewards)
         next_state_index = self.state_space.get_state_index()
 
         return next_state_index, reward
+
+    def is_action_possible(self, action_index):
+        """Verify if the chosen action is possible to execute (taken from the `compute_reward` function, maybe should be put elsewhere)"""
+        possible_action = True
+        
+        current_state_index = self.state_space.get_state_index()
+        current_state_tuple = self.state_space.get_state_from_index(current_state_index)
+        
+        action_dictionary = self.action_space.get_action_dictionary(action_index)
+        
+        noma_users_snr = []
+        
+        # Return false if one of following conditions are met
+        for l, user_current_state in enumerate(current_state_tuple):
+            # the action number of packets to execute for the user are not available in the user buffer
+            if action_dictionary[f'user_{l+1}'] > user_current_state[0]:
+                possible_action = False
+            
+            if action_dictionary[f'action_{l+1}'] == 'communicate':
+                # log the communicating users to verify multiple communications
+                if user_current_state[1] > 1:
+                    noma_users_snr.append(user_current_state[1])
+                # the user action dictates that the user communicates, but its SNR does not allow it 
+                if user_current_state[1] == 0:
+                    possible_action = False
+            
+            # the user battery is not sufficient to execute the action number of packets
+            if action_dictionary[f'user_{l+1}'] > user_current_state[2]:
+                possible_action = False
+        
+        # the joint action dictates multiple communications
+        if len(noma_users_snr) > 1:
+            for user_snr in noma_users_snr:
+                # one of the user SNRs does not permit it
+                if user_snr < len(noma_users_snr):
+                    possible_action = False
+        
+        return possible_action
