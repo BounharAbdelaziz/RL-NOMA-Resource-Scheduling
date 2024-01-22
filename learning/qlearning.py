@@ -53,7 +53,7 @@ class QLearningAgent():
         else:
             return np.argmax(self.Q_matrix[state_index])
     
-    def train(self, n_episodes: int = 5000, n_time_steps: int = 5000, epsilon_decay: float = 0.99, epsilon_min: float = 0.01):
+    def train(self, n_episodes: int = 10000, n_time_steps: int = 100, epsilon_decay: float = 0.999, epsilon_min: float = 0.01):
         """
         Train the Q-Learning agent.
         
@@ -72,8 +72,8 @@ class QLearningAgent():
         
         avg_rewards = []
         
-        # epsilon = 1
-        epsilon = 0.25
+        epsilon = 1
+        # epsilon = 0.25
 
         for episode in tqdm(range(n_episodes)):
             
@@ -105,7 +105,7 @@ class QLearningAgent():
             avg_reward = np.mean(reward_episode)
             avg_rewards.append(avg_reward)
             
-            # epsilon = max(epsilon * epsilon_decay, epsilon_min)
+            epsilon = max(epsilon * epsilon_decay, epsilon_min)
             
             print(f'Episode: {episode+1}/{n_episodes}, Average Reward: {avg_reward}, Epsilon: {epsilon:.2f}, Percentage of unvisited states: {percentage_unvisited_states:.2f}')
             print('---------------------------------------------------')
