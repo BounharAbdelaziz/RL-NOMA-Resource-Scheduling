@@ -83,10 +83,10 @@ class User():
     def update_user_state(self):
         """Update the user state by updating the number of packets in the buffer, the battery level and the channel SNR"""
         # so that we can use it to compute the cost/reward
-        exceeded_delay = False
+        exceeded_delay = 0
         
-        if self.data_packets > self.maximum_delay:
-            exceeded_delay = True
+        if self.data_packets == self.maximum_delay:
+            exceeded_delay = 1
 
         # update the channel SNR
         self.snr_level = np.random.randint(self.snr_levels_cardinality)
@@ -104,7 +104,7 @@ class User():
     def execute(self):
 
         # as we can have at most one packet in the buffer, we execute it and consume energy
-        if self.data_packets > 0:
+        if self.data_packets > 0 and self.battery_level > 0:
             # execute packet
             self.data_packets = self.data_packets - 1
             # consume energy
