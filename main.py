@@ -50,6 +50,7 @@ if __name__ == '__main__':
                         snr_levels_cardinality=snr_levels_cardinality,
                         energy_arrival_probability=energy_arrival_probability,
                         n_users=n_users,
+                        unavailable_action_penalty=10,
                 )
 
         # Actions space initialization
@@ -74,7 +75,7 @@ if __name__ == '__main__':
         elif agent_to_use.upper() == 'Q':
                 agent = QLearningAgent(environment=environment, 
                                                 gamma=gamma, 
-                                                learning_rate=1e-3)     
+                                                learning_rate=1e-1)     
         else:
                 raise NotImplementedError(f"Agent {agent_to_use} is not implemented yet ! Please choose between P (Policy Iteration) and V (Value Iteration)")
         # Start training
