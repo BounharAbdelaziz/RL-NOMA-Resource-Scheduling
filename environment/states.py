@@ -99,7 +99,6 @@ class State():
     
     def execute_action(self, list_actions):
         for user_k, action_k in zip(self.list_users, list_actions):
-            print(f'User {user_k} executes action {action_k}')
             if action_k == 'idle':
                 continue
             else: # int(action_k) > 0:
