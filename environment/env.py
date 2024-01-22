@@ -32,8 +32,7 @@ class Environnement():
         
         return transition
     
-    def reset(self, seed=0):
-        np.random.seed(seed)
+    def reset(self):
         self.state_space.initialize()
     
     def step(self, action_index):
