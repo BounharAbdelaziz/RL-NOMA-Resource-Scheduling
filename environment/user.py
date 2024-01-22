@@ -5,7 +5,7 @@ class User():
 
     def __init__(self,  data_packets=0, 
                         maximum_number_of_packets=1,
-                        snr_level=1, 
+                        snr_level=0, 
                         maximum_delay=1, 
                         maximum_battery_level=2, 
                         battery_level=0,
