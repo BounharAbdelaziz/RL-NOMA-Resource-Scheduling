@@ -1,0 +1,4 @@
+export CUDA_VISIBLE_DEVICES=1
+export CUDA_LAUNCH_BLOCKING=1
+
+python3 main.py
