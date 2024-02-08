@@ -53,7 +53,7 @@ class QLearningAgent():
         else:
             return np.argmax(self.Q_matrix[state_index])
     
-    def train(self, n_episodes: int = 10000, n_time_steps: int = 100, epsilon_decay: float = 0.999, epsilon_min: float = 0.01):
+    def train(self, n_episodes: int = 2000, n_time_steps: int = 5000, epsilon_decay: float = 0.999, epsilon_min: float = 0.01):
         """
         Train the Q-Learning agent.
         
@@ -61,10 +61,8 @@ class QLearningAgent():
         ----------
             - n_episodes : Number of Episodes
             - n_time_steps : Maximum number of time steps per episode
-            - epsilon : Exploration Rate
             - epsilon_decay : Decay Rate for the Exploration Rate
             - epsilon_min : Minimum Exploration Rate
-            - double : Boolean for Double Q-Learning (default = False)
         """
 
         print("[INFO] Q-Learning Training: Process Initiated ... ")
@@ -77,7 +75,7 @@ class QLearningAgent():
 
         for episode in tqdm(range(n_episodes)):
             
-            # Generate a Random Intial State
+            # Generate a Random Initial State
             _ = self.environment.reset()
 
             percentage_unvisited_states = self.computes_percentage_unvisited_states()

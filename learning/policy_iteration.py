@@ -110,8 +110,8 @@ class PolicyIterationAgent():
                 chosen_a = np.argmax(policy[state_index])
                 
                 # Do a one-step lookahead to find the best action 
-                Action_values = one_step_lookahead(state_index, V)
-                best_action = np.argmax(Action_values)
+                action_values = one_step_lookahead(state_index, V)
+                best_action = np.argmax(action_values)
 
                 # Greedily update the policy
                 if chosen_a != best_action:

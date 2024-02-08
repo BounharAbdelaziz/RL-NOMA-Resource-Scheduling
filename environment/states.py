@@ -15,7 +15,7 @@ class State():
                         snr_levels_cardinality=3,
                         energy_arrival_probability=0.5,
                         n_users=2,
-                        unavailable_action_penalty=2,
+                        unavailable_action_penalty=5,
                 ):
         
         # number of users
@@ -58,7 +58,7 @@ class State():
         """Update the state of the system given an action and return the cost = number of packets delayed and discared"""
         state_rewards = []
         for user_k in self.list_users:
-            user_reward = - user_k.update_user_state()
+            user_reward = -1 * user_k.update_user_state()
             if not is_action_possible:
                 # Add a penalty term in the reward for unavailable action
                 user_reward = user_reward - self.unavailable_action_penalty
