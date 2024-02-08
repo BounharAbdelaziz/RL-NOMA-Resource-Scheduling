@@ -41,13 +41,13 @@ class Environnement():
         list_actions = list(action_dictionary.values())
 
         is_action_possible = self.is_action_possible(action_index)
-
         # Execute the action list for the state users
         self.state_space.execute_action(list_actions, is_action_possible)
         # Update the state information and transition to a new one
         state_rewards = self.state_space.update_state(is_action_possible)
-
+        # compute the reward
         reward = sum(state_rewards)
+        # transit to the next state
         next_state_index = self.state_space.get_state_index()
 
         return next_state_index, reward
