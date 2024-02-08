@@ -3,6 +3,7 @@ import numpy as np
 from learning.policy_iteration import PolicyIterationAgent
 from learning.value_iteration import ValueIterationAgent
 from learning.qlearning import QLearningAgent
+from learning.deep_qlearning import DeepQLearningAgent
 from environment.states import State
 from environment.actions import Action
 from environment.transitions import Transition
@@ -37,7 +38,8 @@ if __name__ == '__main__':
         n_users = 2
         unavailable_action_penalty = 5
 
-        agent_to_use = str(input("Which agent do you want to use ? (V: value_iteration / P: policy_iteration/ Q: q_learning): "))
+        # agent_to_use = str(input("Which agent do you want to use ? (V: value_iteration / P: policy_iteration/ Q: q_learning/ DQN: deep_qlearning): "))
+        agent_to_use = 'dqn'
 
         #----------------------------------------------------- Environment -----------------------------------------------------#
 
@@ -63,7 +65,6 @@ if __name__ == '__main__':
         environment = Environnement(states=states, actions=actions, transitions=transitions, rewards=rewards)
 
         #----------------------------------------------------- Agent -----------------------------------------------------#
-
         # Agent
         if agent_to_use.upper() == 'P':
                 agent = PolicyIterationAgent(environment=environment,
@@ -77,7 +78,21 @@ if __name__ == '__main__':
                 agent = QLearningAgent(environment=environment, 
                                                 gamma=gamma, 
                                                 learning_rate=1e-2,
-                                                initial_q_value=-100)     
+                                                initial_q_value=-100)    
+        elif agent_to_use.upper() == 'DQN':
+                agent = DeepQLearningAgent(environment=environment, 
+                                                gamma=gamma, 
+                                                learning_rate=1e-3, 
+                                                params_list=[128, 128], 
+                                                replay_buffer_memory_size=128*20, # to get 10 batches, should cover up the whole state action space
+                                                batch_size=128, 
+                                                loss_fct='mse',
+                                                epsilon_min=0.01,
+                                                n_epochs=30, 
+                                                n_time_steps=2000, 
+                                                freq_update_target=3,
+                                                epsilon_decay=0.99) 
+                
         else:
                 raise NotImplementedError(f"Agent {agent_to_use} is not implemented yet ! Please choose between P (Policy Iteration) and V (Value Iteration)")
         # Start training
