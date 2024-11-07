@@ -11,9 +11,7 @@ class Reward():
         self.reward_matrix_dims = (self.states.n_states, self.actions.n_actions)
         
         self.reward_matrix = self.__compute_rewards()
-        
-        # print(f'Reward Matrix: {self.reward_matrix}')
-    
+            
     def __compute_rewards(self):
     
         reward_matrix = np.zeros(self.reward_matrix_dims)
