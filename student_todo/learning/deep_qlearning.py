@@ -59,27 +59,27 @@ class ReplayBuffer():
 
     def store_transition(self, current_state, action, reward, next_state):
         # Update the index, wrapping around when it exceeds the memory size
-        index = self.memory_counter % self.memory_size
+        index = 
         # Store the transitions
-        self.current_state_memory[index] = current_state
-        self.next_state_memory[index] = next_state
-        self.action_memory[index] = action
-        self.reward_memory[index] = reward
+        self.current_state_memory[index] = 
+        self.next_state_memory[index] = 
+        self.action_memory[index] = 
+        self.reward_memory[index] = 
         # Increment the counter
-        self.memory_counter += 1
+        self.memory_counter = self.memory_counter + 1
 
     def sample_buffer(self):
+        """ Generates a sample of current/next states, actions, rewards to train on. """
+        # max_value = 
 
-        max_value = min(self.memory_counter, self.memory_size)
+        # batch_indices = 
 
-        batch_indices = np.random.choice(max_value, self.batch_size, replace=False)
+        # current_state_batch = 
+        # next_state_batch = 
+        # action_batch = 
+        # reward_batch = 
 
-        current_state_batch = self.current_state_memory[batch_indices]
-        next_state_batch = self.next_state_memory[batch_indices]
-        action_batch = self.action_memory[batch_indices]
-        reward_batch = self.reward_memory[batch_indices]
-
-        return current_state_batch, action_batch, reward_batch, next_state_batch
+        # return current_state_batch, action_batch, reward_batch, next_state_batch
 
 
 class DeepQLearningAgent():
@@ -98,6 +98,7 @@ class DeepQLearningAgent():
                     n_time_steps=1000, 
                     freq_update_target=5,
                     epsilon_decay=0.999,
+                    input_dims=1,
                 ):
 
         self.environment = environment
@@ -108,7 +109,7 @@ class DeepQLearningAgent():
         self.replay_buffer_memory_size = replay_buffer_memory_size
         self.batch_size = batch_size
 
-        self.input_dims = 1 # as we are just inputting the state index
+        self.input_dims = input_dims # as we are just inputting the state index
         self.n_states = self.environment.state_space.n_states
         self.n_actions = self.environment.action_space.n_actions
 
@@ -129,14 +130,14 @@ class DeepQLearningAgent():
 
     def choose_action(self, state_index, epsilon):
         """Choose an action following Epsilon Greedy Policy."""
-        if np.random.random() > epsilon:
-            state = torch.tensor(state_index, dtype=torch.float32).reshape(-1, 1).to(self.evaluation_q_network.device)
-            state_action_values = self.evaluation_q_network(state)
-            best_action = torch.argmax(state_action_values).item()
-            return best_action
-        else:
-            random_action = torch.tensor(np.random.choice(self.n_actions), dtype=torch.int64).unsqueeze(0).to(self.evaluation_q_network.device)
-            return random_action
+        # if np.random.random() > epsilon:
+        #     state = 
+        #     state_action_values = 
+        #     best_action = 
+        #     return best_action
+        # else:
+        #     random_action = 
+        #     return random_action
 
     def train(self):
 
@@ -158,7 +159,7 @@ class DeepQLearningAgent():
             epsilons.append(epsilon)
 
             if (epoch+1) % self.freq_update_target == 0:
-                self.target_q_network.load_state_dict(self.evaluation_q_network.state_dict())
+                # set target network weights equal to eval network weights
 
             # epsilon = epsilons[epoch]
             loss_value = 0
@@ -171,22 +172,20 @@ class DeepQLearningAgent():
                 # <--- Collect Experience and store them in the Replay Buffer --->
                 
                 # get the current state index
-                current_state = self.environment.state_space.get_state_index()
                 
                 # Choose an action following Epsilon Greedy Policy
-                action = self.choose_action(current_state, epsilon)
 
                 # Update State
-                next_state, reward = self.environment.step(action)
 
                 # Store the transition in the Replay Buffer
-                self.replay_buffer.store_transition(current_state, action, reward, next_state)
+                
+
                 if self.replay_buffer.memory_counter >= self.replay_buffer.batch_size:
                     # Sample a batch from the Replay Buffer
-                    current_state_batch, action_batch, reward_batch, next_state_batch = self.replay_buffer.sample_buffer()
+                    
 
                     # Start the training process
-                    loss_value = self.learn(current_state_batch, action_batch, reward_batch, next_state_batch)
+                    # loss_value = self.learn(current_state_batch, action_batch, reward_batch, next_state_batch)
                 # print('---------------------------------------')
             
             losses.append(loss_value)
@@ -198,8 +197,6 @@ class DeepQLearningAgent():
             # update the epsilon value
             epsilon = max(epsilon * self.epsilon_decay, self.epsilon_min)
 
-        
-        # print(f'[INFO] Best Score: {max(score_history)}')
         print(f'[INFO] Average loss: {avg_loss}')
         print("[INFO] Deep Q-Learning Training : Process Completed !")
         
@@ -226,25 +223,16 @@ class DeepQLearningAgent():
         self.target_q_network.eval()
 
         # Get Q-values for the current state-action pairs
-        eval_net_state_action_values = self.evaluation_q_network(current_state_batch)
-        eval_net_state_action_values = eval_net_state_action_values.gather(1, action_batch.unsqueeze(1)).squeeze(1)
-
+        
         # Get Q-values for the next state
-        next_state_action_values = self.target_q_network(next_state_batch)
-
+       
         # Get the maximum Q-value for each next state
-        max_next_state_action_values = next_state_action_values.max(1)[0]
-
+       
         # Calculate the target Q-values using the Bellman equation
-        target_net_state_action_value = reward_batch + self.gamma * max_next_state_action_values
-
+        
         # Calculate the loss between the predicted and target Q-values
-        loss = self.evaluation_q_network.loss(eval_net_state_action_values, target_net_state_action_value)
-
+        
         # Backpropagation
-        self.evaluation_q_network.optimizer.zero_grad()
-        loss.backward()
-        self.evaluation_q_network.optimizer.step()
 
         return loss.item()
 
