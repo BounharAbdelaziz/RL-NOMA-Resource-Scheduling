@@ -142,13 +142,13 @@ class DeepQLearningAgent():
 
         losses = []
 
-        # Exploration Rate Curve if needed
+        # Exploration Rate Curve
         # epsilons = np.ones(int(self.n_epochs))
 
         # for i in range(self.n_epochs):
         #     epsilons[i] = max(epsilons[i-1] * self.epsilon_min**(2/self.n_epochs), self.epsilon_min)
 
-        print(f"[INFO] Initialize Training for DQN Network on Device : {self.target_q_network.device}")
+        print(f"Initialize Training for DQN Network on Device : {self.target_q_network.device}")
 
         epsilon = 1
         epsilons = []
@@ -187,6 +187,7 @@ class DeepQLearningAgent():
 
                     # Start the training process
                     loss_value = self.learn(current_state_batch, action_batch, reward_batch, next_state_batch)
+                # print('---------------------------------------')
             
             losses.append(loss_value)
             avg_loss = np.mean(losses)
@@ -197,6 +198,8 @@ class DeepQLearningAgent():
             # update the epsilon value
             epsilon = max(epsilon * self.epsilon_decay, self.epsilon_min)
 
+        
+        # print(f'[INFO] Best Score: {max(score_history)}')
         print(f'[INFO] Average loss: {avg_loss}')
         print("[INFO] Deep Q-Learning Training : Process Completed !")
         
