@@ -88,12 +88,12 @@ class PolicyIterationAgent():
             for action_index in range(n_actions):
                 transitions = self.env.p(state_index, action_index)
                 for (next_state_prob, next_state_index, reward) in transitions:
-                    A[action_index] += next_state_prob * (reward + self.gamma * V[next_state_index])
+                    A[action_index] = A[action_index] + next_state_prob * (reward + self.gamma * V[next_state_index])
             return A
 
         # Start with a random policy
         policy = np.ones([n_states, n_actions]) / n_actions
-        print(f'Starting Policy: {policy}')
+        print(f'[INFO] Starting Policy: {policy}')
         
         # While not optimal policy
         while True:
@@ -126,10 +126,10 @@ class PolicyIterationAgent():
         """
         Train the Policy Iteration Agent.
         """
-        print("Policy Iteration Training : Process Initiated ... ")
+        print("[INFO] Policy Iteration Training : Process Initiated ... ")
         V, policy, delta_array = self.policy_iteration()
-        print("Policy Iteration Training : Process Completed !")
-        print(f'Policy: {policy}')
+        print("[INFO] Policy Iteration Training : Process Completed !")
+        print(f'[INFO] Policy: {policy}')
         
         plt.plot(delta_array)
         plt.title("Convergence of Policy Iteration Algorithm")

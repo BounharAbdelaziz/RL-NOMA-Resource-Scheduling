@@ -17,8 +17,6 @@ class Transition():
         self.maximum_number_of_packets = self.states.list_users[0].maximum_number_of_packets
         
         self.transition_matrix = self.__compute_transitions()
-        
-        # print(f'Transition Matrix: {self.transition_matrix}')
 
     def __compute_transitions(self):
         

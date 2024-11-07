@@ -22,11 +22,11 @@ class ValueIterationAgent():
         """
         Train the Value Iteration Agent.
         """
-        print("Value Iteration Training : Process Initiated ... ")
+        print("[INFO] Value Iteration Training : Process Initiated ... ")
         V, policy, delta_array = self.value_iteration()
-        print("Value Iteration Training : Process Completed !")
-        print(f'Value function: {V}')
-        print(f'Policy: {policy}')
+        print("[INFO] Value Iteration Training : Process Completed !")
+        print(f'[INFO] Value function: {V}')
+        print(f'[INFO] Policy: {policy}')
         
         plt.plot(delta_array)
         plt.title("Convergence of Value Iteration Algorithm")
@@ -63,13 +63,14 @@ class ValueIterationAgent():
                 A vector of length env.nA containing the expected value of each action.
             """
             A = np.zeros(n_actions)
-            # transitions = self.env.p(state_index, action_index)
+
             for action_index in range(n_actions):
                 # Since env.p returns a list of tuples (transition probability, next state, reward)
                 transitions = self.env.p(state_index, action_index)
+
                 for (next_state_prob, next_state_index, reward) in transitions:
-                    A[action_index] += next_state_prob * (reward + self.gamma * V[next_state_index])
-                
+                    A[action_index] = A[action_index] + next_state_prob * (self.gamma * V[next_state_index])
+                A[action_index] = A[action_index] + reward
             return A
 
         #Initialization value function
@@ -88,7 +89,7 @@ class ValueIterationAgent():
                 # choose the action that maximizes the state-value function
                 best_action_value = np.max(A)
                 # Calculate delta across all states 
-                delta = max(delta, np.abs(best_action_value - V[state_index]))
+                delta = delta + np.abs(best_action_value - V[state_index])
                 delta_array.append(delta)
                 # Update the value function: Bellman optimality eqn 
                 V[state_index] = best_action_value

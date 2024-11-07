@@ -82,15 +82,15 @@ if __name__ == '__main__':
         elif agent_to_use.upper() == 'DQN':
                 agent = DeepQLearningAgent(environment=environment, 
                                                 gamma=gamma, 
-                                                learning_rate=1e-3, 
-                                                params_list=[128, 128], 
-                                                replay_buffer_memory_size=128*20, # to get 10 batches, should cover up the whole state action space
-                                                batch_size=128, 
+                                                learning_rate=5e-3, 
+                                                params_list=[64, 64], 
+                                                replay_buffer_memory_size=64*40, # to get 40 batches, should cover up the whole state action space
+                                                batch_size=64, 
                                                 loss_fct='mse',
                                                 epsilon_min=0.01,
-                                                n_epochs=30, 
+                                                n_epochs=2000, 
                                                 n_time_steps=2000, 
-                                                freq_update_target=3,
+                                                freq_update_target=5,
                                                 epsilon_decay=0.99) 
                 
         else:

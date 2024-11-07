@@ -66,12 +66,11 @@ class QLearningAgent():
         """
 
         print("[INFO] Q-Learning Training: Process Initiated ... ")
-        print(f'The state space is of size {self.n_states * self.n_actions}.')
+        print(f'[INFO] The state space is of size {self.n_states * self.n_actions}.')
         
         avg_rewards = []
         
         epsilon = 1
-        # epsilon = 0.25
 
         for episode in tqdm(range(n_episodes)):
             
@@ -105,7 +104,7 @@ class QLearningAgent():
             
             epsilon = max(epsilon * epsilon_decay, epsilon_min)
             
-            print(f'Episode: {episode+1}/{n_episodes}, Average Reward: {avg_reward}, Epsilon: {epsilon:.2f}, Percentage of unvisited states: {percentage_unvisited_states:.2f}')
+            print(f'[INFO] Episode: {episode+1}/{n_episodes}, Average Reward: {avg_reward}, Epsilon: {epsilon:.2f}, Percentage of unvisited states: {percentage_unvisited_states:.2f}')
             print('---------------------------------------------------')
 
         print("[INFO] Q-Learning Training : Process Completed !")
@@ -114,7 +113,7 @@ class QLearningAgent():
         for s in range(self.n_states):
             best_action_index = np.argmax(self.Q_matrix[s])
             self.policy[s, best_action_index] = 1
-        print(f"Policy : {self.policy}")
+        print(f"[INFO] Policy : {self.policy}")
 
         plt.plot(avg_rewards)
         plt.title("Convergence of Value Iteration Algorithm")
