@@ -42,21 +42,32 @@ As the data buffer, battery, and channel state dynamics satisfy the Markov prope
 - The SNR level of the two users, i.e., the vector $[SNR_1, SNR_2]$.
 
 We can thus write:
-$$\mathcal{S} = \{D_1, B_1, SNR_1, D_2, B_2, SNR_2\}.$$
+
+```math
+\mathcal{S} = \{D_1, B_1, SNR_1, D_2, B_2, SNR_2\}.
+```
 This state space is of size:
-$$| \mathcal{S} | = \prod_{u=1}^2 \left[ \underbrace{(\Delta_u +1)^{1}}_{\text{Buffer space size}} \cdot \underbrace{(2 +1)}_{\text{Battery space size}} \cdot \underbrace{3}_{\text{SNR space size}} \right] = 324.$$
+```math
+| \mathcal{S} | = \prod_{u=1}^2 \left[ \underbrace{(\Delta_u +1)^{1}}_{\text{Buffer space size}} \cdot \underbrace{(2 +1)}_{\text{Battery space size}} \cdot \underbrace{3}_{\text{SNR space size}} \right] = 324.
+```
 
 *Actions space*: We define our actions space as a vector of all possible decisions that can be made by the BS, i.e., how many (including 0) data packets to be transmitted. At each time instance $t \in \mathcal{T}$, each user $u \in \{1,2\}$ either **communicates** or remains **idle**. Therefore,
 $$\mathcal{A} = \{0, \ldots, 3\}.$$
 This actions space is of size:
-$$| \mathcal{A} | = 4.$$
+```math
+| \mathcal{A} | = 4.
+```
 which makes the state-action space of size $324 \cdot 4 = 1296$.
 
 ### Reward Model
 
 The agent seeks to minimize the number of lost packets. The reward function for our problem will be the penalized sum:
-$$ R_t = -\sum_{u=1}^{2} \sum_{j=1}^{2} \mathsf{1} \{D_u[j] > \Delta_u\}, \forall t \in \mathcal{T}.$$
+```math
+R_t = -\sum_{u=1}^{2} \sum_{j=1}^{2} \mathsf{1} \{D_u[j] > \Delta_u\}, \forall t \in \mathcal{T}.
+```
 
 As we formalize our problem as an Infinite Discounted Horizon problem, the overall reward function following a policy $\pi$ is defined as:
-$$R^{\pi} = \lim_{T \to \infty} \mathbb{E}^{\pi} \left[ \sum_{t=0}^T \gamma^t \cdot R_t \right],$$
+```math
+R^{\pi} = \lim_{T \to \infty} \mathbb{E}^{\pi} \left[ \sum_{t=0}^T \gamma^t \cdot R_t \right],
+```
 with $\gamma$ being the discount factor.
