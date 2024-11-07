@@ -71,3 +71,16 @@ As we formalize our problem as an Infinite Discounted Horizon problem, the overa
 R^{\pi} = \lim_{T \to \infty} \mathbb{E}^{\pi} \left[ \sum_{t=0}^T \gamma^t \cdot R_t \right],
 ```
 with $\gamma$ being the discount factor.
+
+## Approach: Optimal and Near-Optimal Policies via Model-based and Model-free Methods
+
+To address the centralized scheduling problem, we will begin by deriving optimal policies using model-based methods, specifically **Value Iteration** and **Policy Iteration**. These methods, rooted in Dynamic Programming, enable us to leverage a known model of the environment to find optimal solutions. Value Iteration iteratively updates value estimates for each state until it converges to the optimal policy, while Policy Iteration alternates between evaluating a policy and improving it, refining the policy with each iteration until optimality is achieved. For further details, see foundational works on Value Iteration and Policy Iteration (Sutton & Barto, 2018).
+
+Following the model-based approach, we will apply **model-free methods**, namely **Q-Learning** and **Deep Q-Networks**. Unlike model-based methods, Q-Learning learns the optimal policy without needing an explicit model of the environment, making it suitable for environments with unknown or dynamic transitions. In contrast, Deep Q-Networks extend Q-Learning by using neural networks to approximate the Q-values, enabling efficient learning in high-dimensional state-action spaces. The introduction of DQN by Mnih et al. (2015) marked a breakthrough in reinforcement learning for complex environments, and we will leverage it here to handle the challenges in our scheduling setup.
+
+By applying these methods, we aim to compare and contrast model-based and model-free approaches in terms of their performance and suitability for the problem at hand. Specifically, we aim to analyze wetheir model free methods can learn the optimal solution.
+
+**References**:
+- Sutton, R. S., & Barto, A. G. (2018). *Reinforcement Learning: An Introduction* (2nd ed.). MIT Press.
+- Watkins, C. J. C. H., & Dayan, P. (1992). *Q-Learning*. Machine Learning, 8, 279–292.
+
